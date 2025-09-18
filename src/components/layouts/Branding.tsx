@@ -10,7 +10,7 @@ function Branding({ className }: Props) {
       href="/"
       className={cn("text-2xl font-medium align-middle", className)}
     >
-      HIYORI
+      SpotCove
     </Link>
   );
 }

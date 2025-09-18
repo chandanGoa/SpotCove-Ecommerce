@@ -24,8 +24,8 @@ interface CategoryPageProps {
 
 export function generateMetadata({ params }: CategoryPageProps) {
   return {
-    title: `HIYORI | ${toTitleCase(unslugify(params.collectionSlug))}`,
-    description: `HIYORI | Buy ${params.collectionSlug} funiture.`,
+    title: `SpotCove | ${toTitleCase(unslugify(params.collectionSlug))}`,
+    description: `SpotCove | Buy ${params.collectionSlug} funiture.`,
   };
 }
 

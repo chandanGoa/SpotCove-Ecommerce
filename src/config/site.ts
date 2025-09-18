@@ -5,7 +5,7 @@ import { slugify } from "@/lib/utils";
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "HIYORI",
+  name: "SpotCove",
   description: "Ecommerce Application built with NextJS 14",
   url: "https://hiyori.hugo-coding.com",
   address: "1600 Amphitheatre Parkway in Mountain View, California",
@@ -20,13 +20,13 @@ export const siteConfig = {
     },
     {
       title: "Our Story",
-      href: "https://github.com/clonglam/HIYORI-master",
+      href: "https://github.com/clonglam/SpotCove-master",
       description: "Our Story.",
       items: [],
     },
     {
       title: "Brands & Designers",
-      href: "https://github.com/clonglam/HIYORI-master",
+      href: "https://github.com/clonglam/SpotCove-master",
       description: "Read our latest blog posts.",
       items: [],
     },

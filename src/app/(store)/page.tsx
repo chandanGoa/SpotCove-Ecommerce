@@ -140,7 +140,7 @@ function HeroSection() {
             </Link>
 
             <Link
-              href="https://github.com/clonglam/HIYORI-master"
+              href="https://github.com/clonglam/SpotCove-master"
               target="_blank"
               className={cn(
                 buttonVariants({ variant: "default", size: "lg" }),
