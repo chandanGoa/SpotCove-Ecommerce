@@ -20,7 +20,7 @@ export default function Provider({ children }: React.PropsWithChildren) {
     const ssr = ssrExchange();
 
     const client = createClient({
-      url: `https://${env.NEXT_PUBLIC_SUPABASE_PROJECT_REF}.supabase.co/graphql/v1`,
+      url: `${env.NEXT_PUBLIC_SUPABASE_URL}/graphql/v1`,
       exchanges: [
         // devtoolsExchange,
         cacheExchange({

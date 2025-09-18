@@ -57,7 +57,7 @@ console.log(
 )
 
 fetchGraphQLSchema(
-  `https://${process.env.NEXT_PUBLIC_SUPABASE_PROJECT_REF}.supabase.co/graphql/v1`,
+  `${process.env.NEXT_PUBLIC_SUPABASE_URL}/graphql/v1`,
   {
     readable: true,
   }
