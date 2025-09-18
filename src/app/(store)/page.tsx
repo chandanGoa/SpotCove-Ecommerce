@@ -107,7 +107,7 @@ function HeroSection() {
       <div className="relative w-full h-full md:h-[800px]">
         <Image
           alt="Furniture"
-          src="https://hiyori-backpack.s3.us-west-2.amazonaws.com/public/hero-image.jpg"
+          src="/hero-image.jpg"
           width={1920}
           height={1200}
           priority={true}
