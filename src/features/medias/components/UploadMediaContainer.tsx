@@ -39,16 +39,14 @@ function UploadMediaContainer({
 
   const onDrop = async (acceptedFiles: FileWithPath[]) => {
     const uploadFiles = acceptedFiles.map((file) =>
-      Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      }),
+      Object.assign(file, { preview: URL.createObjectURL(file) })
     );
 
     setUploadingImages([...uploadingImages, ...uploadFiles]);
 
     const formData = new FormData();
     for (let i = 0; i < uploadFiles.length; i++) {
-      formData.append(`files[${i}]`, uploadFiles[i]);
+      formData.append("files[]", uploadFiles[i]); // ✅ match API
     }
 
     try {
@@ -57,19 +55,19 @@ function UploadMediaContainer({
         body: formData,
       });
 
-      const data = (await response.json()) as string[];
+      const urls = (await response.json()) as string[];
 
-      if (data) {
-        refetch({ requestPolicy: "network-only" });
-
-        setUploadingImages(
-          uploadingImages.filter((item) => data.includes(item.path)),
-        );
+      if (urls?.length) {
+        // Use first image or all images depending on your UI
+        onClickItemsHandler(urls[0]);
       }
-    } catch (error) {
-      // console.error("Error uploading files:", error)
+
+      setUploadingImages([]);
+    } catch (err) {
+      console.error("Upload failed:", err);
     }
   };
+
 
   useEffect(() => {
     return () =>

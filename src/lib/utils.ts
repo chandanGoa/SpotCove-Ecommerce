@@ -20,11 +20,31 @@ export const getURL = () => {
   return url;
 };
 
-export const keytoUrl = (key?: string) => {
-  return key
-    ? `https://${env.NEXT_PUBLIC_S3_BUCKET}.s3.${env.NEXT_PUBLIC_S3_REGION}.amazonaws.com/${key}`
-    : "/bathroom-planning.jpg";
-};
+export function keytoUrl(key: string) {
+  if (!key) return "";
+
+  console.log(key);
+
+  // Local dev: files under /public/uploads
+  if (key.startsWith("uploads/") || key.startsWith("/uploads/")) {
+    return key.startsWith("/") ? key : "/" + key;
+  }
+
+  // Supabase public storage
+  if (key.startsWith("public/")) {
+    const projectRef = process.env.NEXT_PUBLIC_PROJECT_REF;
+    if (!projectRef) throw new Error("NEXT_PUBLIC_PROJECT_REF is not set");
+
+    return `https://${projectRef}.supabase.co/storage/v1/object/public/medias/${key}`;
+  }
+
+  // Fallback: always try prefix with "/"
+  if (!key.startsWith("/") && !key.startsWith("http")) {
+    return "/" + key;
+  }
+
+  return key;
+}
 
 export function formatPrice(price: number | string) {
   return new Intl.NumberFormat("en-US", {

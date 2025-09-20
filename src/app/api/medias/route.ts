@@ -1,81 +1,76 @@
 "use server";
 
-import { env } from "@/env.mjs";
-import { uploadImage } from "@/lib/s3";
+import { createClient } from "@supabase/supabase-js";
 import db from "@/lib/supabase/db";
 import { medias } from "@/lib/supabase/schema";
-import { mediaSchema } from "@/validations/medias";
 import { nanoid } from "nanoid";
 import { NextRequest, NextResponse } from "next/server";
-import sharp from "sharp";
-import { z } from "zod";
+import { writeFile } from "fs/promises";
+import path from "path";
 
 export async function POST(request: NextRequest) {
-  // const session = await getServerSession(authOptions)
-  //   if (!session) return NextResponse.json({}, { status: 401 })
   const formData = await request.formData();
-  const data = Object.fromEntries(formData) as z.infer<typeof mediaSchema>;
-  const validation = mediaSchema.safeParse(data);
+  const files = formData.getAll("files[]").filter((f): f is File => f instanceof File);
 
-  if (validation.success === false) {
-    return NextResponse.json(validation.error.format(), { status: 400 });
+  if (!files.length) {
+    return NextResponse.json({ error: "No files" }, { status: 400 });
   }
 
-  let statusCode = 201;
-  let errorMessage = "Unexpected Error";
+  const useLocal = process.env.NODE_ENV === "development";
 
-  const uploadResponse = await Promise.all(
-    Object.entries(data).map(async ([index, file]) => {
-      const fileExtension = file.type.split("/")[1];
-      const key = nanoid() + "." + fileExtension;
+  // ⚡ Only create supabase client if not local
+  const supabase = !useLocal
+    ? createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      )
+    : null;
 
-      const params = {
-        Bucket: env.NEXT_PUBLIC_S3_BUCKET,
-        Key: "public/" + key,
-        Body: Buffer.from(await file.arrayBuffer()),
-        ContentType: file.type,
-      };
+  try {
+    const uploadedUrls = await Promise.all(
+      files.map(async (file) => {
+        const fileExt = file.type.split("/")[1];
+        const key = nanoid() + "." + fileExt;
 
-      try {
-        const s3Response = await uploadImage(params);
+        if (useLocal) {
+          // ✅ Save locally
+          const buffer = Buffer.from(await file.arrayBuffer());
+          const filePath = path.join(process.cwd(), "public", "uploads", key);
+          await writeFile(filePath, buffer);
 
-        if (s3Response) {
-          const insertedMedia = await db
-            .insert(medias)
-            .values({ alt: file.name, key: params.Key })
-            .returning();
+          await db.insert(medias).values({
+            alt: file.name,
+            key: "uploads/" + key,
+          });
 
-          return file.path;
+          return `/uploads/${key}`;
+        } else {
+          // ✅ Upload to Supabase storage
+          const { error } = await supabase!.storage
+            .from("medias")
+            .upload(`public/${key}`, file, {
+              contentType: file.type,
+              upsert: false,
+            });
+
+          if (error) throw error;
+
+          await db.insert(medias).values({
+            alt: file.name,
+            key: `public/${key}`,
+          });
+
+          const { data } = supabase!.storage
+            .from("medias")
+            .getPublicUrl(`public/${key}`);
+
+          return data.publicUrl;
         }
-      } catch (err) {
-        statusCode = 400;
-        errorMessage = err.message;
-        return { message: err.message };
-      }
-    }),
-  );
+      })
+    );
 
-  return statusCode >= 300
-    ? NextResponse.json({ message: errorMessage }, { status: statusCode })
-    : NextResponse.json(uploadResponse, { status: statusCode });
+    return NextResponse.json(uploadedUrls, { status: 201 });
+  } catch (err: any) {
+    return NextResponse.json({ message: err.message }, { status: 400 });
+  }
 }
-
-const fileToStream = async (file: File) => {
-  // Upload Image to S3 bucket
-  const mimeType = file.type;
-  const buffer = Buffer.from(await file.arrayBuffer());
-
-  const imageBuffer = await sharp(buffer);
-  const metadata = await imageBuffer.metadata();
-
-  if (mimeType !== "image/gif")
-    return {
-      mimeType: "image/webp",
-      buffer: await sharp(buffer).webp().toBuffer(),
-    };
-
-  return {
-    mimeType: "image/gif",
-    buffer,
-  };
-};

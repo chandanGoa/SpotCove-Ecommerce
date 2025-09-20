@@ -240,7 +240,7 @@ function CollectionGrid() {
     <section className="relative lg:space-x-5 space-y-5 lg:space-y-0 grid grid-cols-1 lg:grid-cols-3 max-h-[840px]">
       <div className="relative col-span-2 w-full h-[840px]">
         <Image
-          src={keytoUrl("public/zPiCx79oGe5X4rVBLg0Ss.jpeg")}
+          src={keytoUrl("/uploads/ay8lmMTrzo_SBGQtsyVEa.png")}
           width={1080}
           height={1080}
           className="object-cover w-full h-full"
@@ -261,7 +261,7 @@ function CollectionGrid() {
       <div className="flex flex-col w-full space-y-5 h-[840px]">
         <div className="relative w-full h-[340px]">
           <Image
-            src={keytoUrl("public/E2MWE99uGyOZLd76UEixy.jpeg")}
+            src={keytoUrl("/uploads/ay8lmMTrzo_SBGQtsyVEa.png")}
             width={800}
             height={900}
             className="object-cover w-full h-full"
@@ -271,7 +271,7 @@ function CollectionGrid() {
 
         <div className="relative overflow-hidden">
           <Image
-            src={keytoUrl("public/YPO3VwJvjvlkWzNtIv9FS.jpeg")}
+            src={keytoUrl("/uploads/ay8lmMTrzo_SBGQtsyVEa.png")}
             width={800}
             height={900}
             className="object-cover w-full h-full"
