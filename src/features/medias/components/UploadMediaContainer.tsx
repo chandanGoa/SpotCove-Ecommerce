@@ -39,7 +39,7 @@ function UploadMediaContainer({
 
   const onDrop = async (acceptedFiles: FileWithPath[]) => {
     const uploadFiles = acceptedFiles.map((file) =>
-      Object.assign(file, { preview: URL.createObjectURL(file) })
+      Object.assign(file, { preview: URL.createObjectURL(file) }),
     );
 
     setUploadingImages([...uploadingImages, ...uploadFiles]);
@@ -67,7 +67,6 @@ function UploadMediaContainer({
       console.error("Upload failed:", err);
     }
   };
-
 
   useEffect(() => {
     return () =>

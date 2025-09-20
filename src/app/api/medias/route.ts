@@ -10,7 +10,9 @@ import path from "path";
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
-  const files = formData.getAll("files[]").filter((f): f is File => f instanceof File);
+  const files = formData
+    .getAll("files[]")
+    .filter((f): f is File => f instanceof File);
 
   if (!files.length) {
     return NextResponse.json({ error: "No files" }, { status: 400 });
@@ -22,7 +24,7 @@ export async function POST(request: NextRequest) {
   const supabase = !useLocal
     ? createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
       )
     : null;
 
@@ -66,7 +68,7 @@ export async function POST(request: NextRequest) {
 
           return data.publicUrl;
         }
-      })
+      }),
     );
 
     return NextResponse.json(uploadedUrls, { status: 201 });
